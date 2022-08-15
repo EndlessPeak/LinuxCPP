@@ -1,0 +1,41 @@
+* Linux and C plus plus Learning
+** Emerge
+Emerge is the front end of the portage,which is Gentoo linux's package manager.
+
+The program I made is a kind of emulation for using Arch linux's package manager (which is pacman) in emerge's command format.
+
+*** Warning
+This program just suit arch series distributions.
+*** Compile
+Just simply run =make= to compile the source code.
+
+You can add emerge in your =$PATH= ,or use =./emerge= for loading program localy.
+
+*** Usage
+Remember,install/sync/remove operations need to run as root.
+But with =deep= option,you must avoid run as root because =deep= use yay as final program instead of pacman.
+
+1. Install package
+   =emerge <package_name>= 
+
+   '-a' for ask,ask before install the package.
+   '-v' for verbose,show the detail of the install process.
+
+2. Search package
+   =emerge --search <package_name>=
+
+   '-s' for search.
+
+3. Sync repository
+   =emerge --sync=
+
+   =emerge --update= optional add package name for updating the selected pacakge,if package is null,update the system.
+   
+4. Remove package
+   =emerge --deselect <package_name>= temporally set this reflects to remove package without check dependence.
+
+   =emerge --depclean <package_name>= remove packages with dependence check.
+
+5. additional option
+   =--usepkg= means install package from local arch package.
+   =--oneshot= means install package withou dependence check.

@@ -146,7 +146,7 @@ int decode_args(int argc,char *argv[]){
         {"update" , no_argument , NULL , 3},
         {"version", no_argument, NULL , 4},
         {"sync" , no_argument , NULL , 5},
-        {"deep" , no_argument , NULL , 'd'},
+        {"deep" , no_argument , NULL , 'D'},
         {"pacman" , no_argument , NULL , 'p'},
         {0,         0,                 0,  0 },
         //{"search" , required_argument , &lopt , 's'},
@@ -220,7 +220,7 @@ int decode_args(int argc,char *argv[]){
             case 4:
                 version();
                 break;
-            case 'd':
+            case 'D':
                 yay=true;
                 break;
             case 'p':
