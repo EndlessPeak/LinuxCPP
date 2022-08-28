@@ -55,7 +55,7 @@ struct {
 
 // 用于修饰操作细节
 bool pacman=false;//直接让pacman接管参数解析
-bool confirm=false;//属于长参数
+bool confirm=false;//属于长参数 --ask --confirm
 bool verbose=false;//属于长参数
 bool yay=false;//安装时是否考虑AUR
 bool updateSystem=false;//是否更新系统（否则仅更新软件仓库,不更新软件）
@@ -76,7 +76,7 @@ int decode_args(int argc,char *argv[]);
 int decode_longArgs(char **&longArgs);
 int decode_operations(char *command[]);
 int excute_command(char *mainProgram,char *excuteCommand[]);
-int operate_packages(int &packages,char **&packageArgs,char *argv[],int position,int status);
+int operate_packages(int &packages,char **&packageArgs,char *argv[],int position);
 int operate_args(int packages,int position,char *argv[]);
 int checkOptionConflict();
 
@@ -85,13 +85,13 @@ int checkOptionConflict();
  * 2.对参数进行操作 */
 int main(int argc, char *argv[]) {
     int i=decode_args(argc, argv);
-    int status=0;
+    int status=-1;
     if(i < 0){
-        return -1;
+        return status;
     }
     //对pacman略过解析步骤
-    if(pacman)
-        ;
+    //if(pacman)
+    //    ;
     int packages=argc-i;//需要安装的包数量
     status=operate_args(packages,i,argv);
     return status;
@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
  * 若在修改操作参数前发现操作参数非默认，说明有冲突参数 */
 int checkOptionConflict(){
     if(Action.modify > 1 || Dependence.modify >1 ){
-        printf("Wrong arguments or conflict options received.");
+        printf("Wrong arguments or conflict options received.\n");
         usage();
         return 1;
     }
@@ -116,14 +116,14 @@ int checkOptionConflict(){
 int operate_args(int packages,int position,char *argv[]){
     if(printAndExit)
         return 0;
-    char *command[2];//记录命令与参数
+    char *command[2];//记录命令与参数 /usr/bin/pacman yay
     char **longArgs;//=(char**)malloc(sizeof(char*)*longArgsNum);
     char **packageArgs;//=(char**)malloc(sizeof(char*)*(packages));
     /* 上述两个字符串数组申请的空间在子函数中
      * 需要带回到本函数，故需要使用引用传递 */
     //解析长参数返回长参数结束位置
     decode_longArgs(longArgs);
-    int status=operate_packages(packages,packageArgs,argv, position,0);
+    int status=operate_packages(packages,packageArgs,argv, position);
     if(status)
         return status;
     status=produce_command(packages,command,longArgs,packageArgs);
@@ -143,11 +143,13 @@ int decode_args(int argc,char *argv[]){
         {"oneshot" , no_argument , NULL , '1'},
         {"deselect" , no_argument , NULL , 1},
         {"depclean" , no_argument , NULL , 2},
-        {"update" , no_argument , NULL , 3},
+        {"update" , no_argument , NULL , 'u'},
         {"version", no_argument, NULL , 4},
         {"sync" , no_argument , NULL , 5},
         {"deep" , no_argument , NULL , 'D'},
         {"pacman" , no_argument , NULL , 'p'},
+        {"newuse", no_argument , NULL , 'N'},
+        {"changed-use", no_argument, NULL , 'U'},
         {0,         0,                 0,  0 },
         //{"search" , required_argument , &lopt , 's'},
     };
@@ -161,7 +163,7 @@ int decode_args(int argc,char *argv[]){
     // if(optarg)
     //     printf(" with package %s\n",optarg);
     while (true) {
-        int c = getopt_long(argc, argv, "asvC1Kdp", long_options, &index);
+        int c = getopt_long(argc, argv, "asvC1KDpuNU", long_options, &index);
         if(c == -1)
             break;
         if(checkOptionConflict())
@@ -213,7 +215,7 @@ int decode_args(int argc,char *argv[]){
                 Dependence.dependence=0;
                 Dependence.modify+=1;
                 break;
-            case 3:
+            case 'u':
                 Action.action=Sync;
                 Action.modify+=1;
                 break;
@@ -225,6 +227,9 @@ int decode_args(int argc,char *argv[]){
                 break;
             case 'p':
                 pacman=true;
+                break;
+            case 'N':
+            case 'U':
                 break;
             case '?':
                 //printf("unrecognized option %s",argv[optopt]);
@@ -242,7 +247,7 @@ int decode_args(int argc,char *argv[]){
  * argv 是命令行参数
  * position 是当前操作包的位置，是实际下标，对应数组下标时需减1
  * packageArgs 是转换的操作包的数组，packageArgs[0] 表示操作选项，因此不需减1 */
-int operate_packages(int& packages,char **&packageArgs,char *argv[],int position,int status){
+int operate_packages(int& packages,char **&packageArgs,char *argv[],int position){
     if(packages==0 && Action.action!=Sync){
         printf("You must specify at least one package!");
         return -1;
@@ -429,6 +434,7 @@ int produce_command(int packages,char *command[],char *longArgs[],char *packageA
         excuteCommand[index]=longArgs[i];
     for(i=0; i < packages ; i++,index++)
         excuteCommand[index]=packageArgs[i];
+    //必须在结尾赋NULL表示参数结束，否则运行不成功
     excuteCommand[index]=NULL;
     excute_command(command[0],excuteCommand);
     //systemExec(index,excuteCommand);
