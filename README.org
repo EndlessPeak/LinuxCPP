@@ -5,6 +5,8 @@ Emerge is the front end of the portage,which is Gentoo linux's package manager.
 The program I made is a kind of emulation for using Arch linux's package manager (which is pacman) in emerge's command format.
 
 *** Warning
+*No guarantee for security and stability.*
+
 This program just suit arch series distributions.
 *** Compile
 Just simply run =make= to compile the source code.
@@ -39,3 +41,26 @@ But with =deep= option,you must avoid run as root because =deep= use yay as fina
 5. additional option
    =--usepkg= means install package from local arch package.
    =--oneshot= means install package withou dependence check.
+** Eselect
+Eselect is an utility in gentoo for selecting software versions when multiple versions of software coexist.
+
+Gentoo's engineering team writes eseselect through bash script, which makes the program simple and easy to expand.
+
+In order to pratice my C++ capacity,I used C + + to imitate it. For the sake of realizing the extended function and reviewing the object-oriented knowledge I learned in college, I used the simple factory in the design pattern and the dynamic class registration.
+
+*** Warning
+*No guarantee for security and stability.*
+
+You should edit the pathname in the program.Because though kernel usually located at =/usr/src=,the test file located at somewhere else in this program.
+*** Compile
+Just simply run =make= to compile the source code.
+
+You can add eselect in your =$PATH= ,or use =./eselect= for loading program localy.
+*** Usage
+eselect <module> <option>
+
+The available module only have =kernel= now.The available option are =list= and =set=. 
+
+Here are some examples:
+1. ~eselect kernel list~
+2. ~eselect kernel set 2~
