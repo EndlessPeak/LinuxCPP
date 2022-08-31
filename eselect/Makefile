@@ -5,12 +5,12 @@ CXXFLAGS = -Wall
 #PATH
 MODULES_PATH = Modules
 
-all: eselect test
+all: eselect modules
 
 eselect: eselect.cpp
 	$(CXX) $(CXXFLAGS) eselect.cpp -o eselect
 
-test:
+modules:
 	$(MAKE)  -C $(MODULES_PATH)
 
 clean:
