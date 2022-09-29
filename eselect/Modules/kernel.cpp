@@ -1,4 +1,3 @@
-#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -42,6 +41,7 @@ int Kernel::openList(char *pathname) {
     numItems=0;//每次统计前都将numItems清空
     int status=-1;
     struct dirent *direntp;
+    char *filenamePrefix=(char*)malloc(6);
     DIR *dirptr; 
     if((dirptr = opendir(pathname))==NULL){
         fprintf(stderr, "eselect cannot open folder\n");
@@ -49,7 +49,13 @@ int Kernel::openList(char *pathname) {
     }
     while ((direntp = readdir(dirptr))!= NULL) {
         //跳过被链接的文件和本级、上级目录
-        if(strcmp(direntp->d_name, ".")&&strcmp(direntp->d_name, "..")&&strcmp(direntp->d_name, "linux")){
+        strncpy(filenamePrefix,direntp->d_name,5);//拷贝前5个字符
+        if(strcmp(direntp->d_name, ".")//忽略指示当前目录的文件
+           &&strcmp(direntp->d_name, "..")//忽略指示上级目录的文件
+           &&strcmp(direntp->d_name, "linux")//忽略链接文件本身
+           &&!strcmp(filenamePrefix,"linux")//判断文件名是否与内核有关
+           &&direntp->d_type==DT_DIR//判断是否是目录
+           ){
             listItems[numItems]=direntp->d_name;
             //strlen 使用siez_t
             if (itemBytes<(int)strlen(listItems[numItems])) {
@@ -61,6 +67,7 @@ int Kernel::openList(char *pathname) {
                 listItems=(char**)realloc(listItems,sizeof(char*)*(numItems+10));
         }
     }
+    free(filenamePrefix);
     itemBytes+=1;//字符串终结符号需要额外1个位置,它将在checkList中体现。
     //printf("%d\n",numItems);
     return status+1;
@@ -246,7 +253,8 @@ int main(int argc, char *argv[]) {
     //printf("%s\n",argv[2]);
     Base *p = NULL;
     REGISTER_CLASS(Kernel);
-    p = (Base *)ClassFactory::getInstance().CreateObjectByName("Kernel");
+    p = (Base *)ClassFactory::getInstance().getClassByName("Kernel");
+    //CreateObjectByName("Kernel");
     //int (*memfun)();
     //printf("%s\n",pathname);
     //p->print();

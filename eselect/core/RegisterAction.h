@@ -4,8 +4,7 @@
 class RegisterAction
 {
 public:
-    RegisterAction(string className, pCreateObject ptrCreateFn)
-    {
+    RegisterAction(string className, pCreateObject ptrCreateFn){
         ClassFactory::getInstance().registClass(className, ptrCreateFn);
     }
 };
@@ -14,4 +13,5 @@ public:
     RegisterAction g_creatorRegister##className( \
         #className, reinterpret_cast<pCreateObject>(createObj<className>))
 
+//reinterpret_cast<type-id>(expression) 是强制类型转换
 #endif
