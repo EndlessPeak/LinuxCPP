@@ -271,6 +271,22 @@ Serial::setTimeout (Timeout &timeout)
     pimpl_->setTimeout (timeout);
 }
 
+void
+Serial::setTimeout (uint32_t inter_byte_timeout,
+                    uint32_t read_timeout_constant,
+                    uint32_t read_timeout_multiplier,
+                    uint32_t write_time_out_constant,
+                    uint32_t write_timeout_multiplier)
+{
+    Timeout timeout(inter_byte_timeout,
+                    read_timeout_constant,
+                    read_timeout_multiplier,
+                    write_time_out_constant,
+                    write_timeout_multiplier);
+    //return setTimeout(timeout);
+    pimpl_->setTimeout (timeout);
+}
+
 Timeout
 Serial::getTimeout () const {
     return pimpl_->getTimeout ();

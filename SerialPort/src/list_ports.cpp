@@ -21,7 +21,7 @@ static std::string dirname(const std::string& path);
 static bool path_exists(const std::string& path);
 static std::string realpath(const std::string& path);
 static std::string usb_sysfs_friendly_name(const std::string& sys_usb_path);
-static std::vector<std::string> get_sysfs_info(const std::string& device_path);
+std::vector<std::string> get_sysfs_info(const std::string& device_path);
 static std::string read_line(const std::string& file);
 static std::string usb_sysfs_hw_string(const std::string& sysfs_path);
 static std::string format(const char* format, ...);

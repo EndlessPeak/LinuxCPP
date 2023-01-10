@@ -14,7 +14,7 @@
 
 //__FILE__ 指示本行语句所在源文件的文件名
 //__LINE__ 指示本行语句所在源文件的行数
-#define THROW(exceptionClass,message) throw exceptionClass(__FILE__,__LINE__,(message))
+#define THROW(exceptionClass,message) throw exceptionClass((__FILE__),(__LINE__),(message))
 
 // 定义串口可能的字节大小
 typedef enum {
@@ -138,20 +138,20 @@ public:
     size_t write(const std::string &data);
     void setPort(const std::string &port);
     std::string getPort () const;
-    void setTimeout(Timeout &timeout);
     void setTimeout(uint32_t inter_byte_timeout,
                     uint32_t read_timeout_constant,
                     uint32_t read_timeout_multiplier,
                     uint32_t write_time_out_constant,
-                    uint32_t write_timeout_multiplier)
-    {
-        Timeout timeout(inter_byte_timeout,
-                        read_timeout_constant,
-                        read_timeout_multiplier,
-                        write_time_out_constant,
-                        write_timeout_multiplier);
-        return setTimeout(timeout);
-    }; 
+                    uint32_t write_timeout_multiplier); 
+    // {
+    //     Timeout timeout(inter_byte_timeout,
+    //                     read_timeout_constant,
+    //                     read_timeout_multiplier,
+    //                     write_time_out_constant,
+    //                     write_timeout_multiplier);
+    //     return setTimeout(timeout);
+    // }
+    void setTimeout(Timeout &timeout);
     Timeout getTimeout() const;
     void setBaudrate(uint32_t baudrate);
     uint32_t getBaudrate () const;
@@ -270,5 +270,5 @@ struct PortInfo {
 };
 
 std::vector<PortInfo> list_ports();
-
+std::vector<std::string> get_sysfs_info(const std::string& device_path);
 #endif
